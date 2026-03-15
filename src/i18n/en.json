@@ -1,0 +1,26 @@
+{
+  "title": "Community Points",
+  "subtitle": "Earn points by being active in voice channels.",
+  "leaderboard": "Leaderboard",
+  "leaderboardSubtitle": "Top members by points earned.",
+  "leaderboardPrivate": "The leaderboard is currently private.",
+  "yourPoints": "Your Points",
+  "rank": "Rank",
+  "member": "Member",
+  "points": "Points",
+  "you": "you",
+  "viewAll": "View all",
+  "back": "Back",
+  "noData": "No data yet. Start talking in voice channels!",
+  "loading": "Loading…",
+  "awardPoints": "Award Points",
+  "award": "Award",
+  "awarding": "Awarding…",
+  "awardSuccess": "Awarded {amount} points to {username}.",
+  "memberIdPlaceholder": "Member ID",
+  "amountPlaceholder": "Amount",
+  "error": {
+    "load": "Failed to load data. Please try again.",
+    "award": "Failed to award points. Please try again."
+  }
+}

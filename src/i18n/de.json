@@ -1,0 +1,26 @@
+{
+  "title": "Community-Punkte",
+  "subtitle": "Verdiene Punkte durch Aktivität in Sprachkanälen.",
+  "leaderboard": "Bestenliste",
+  "leaderboardSubtitle": "Die aktivsten Mitglieder nach Punkten.",
+  "leaderboardPrivate": "Die Bestenliste ist aktuell privat.",
+  "yourPoints": "Deine Punkte",
+  "rank": "Rang",
+  "member": "Mitglied",
+  "points": "Punkte",
+  "you": "du",
+  "viewAll": "Alle anzeigen",
+  "back": "Zurück",
+  "noData": "Noch keine Daten. Sei aktiv in Sprachkanälen!",
+  "loading": "Lädt…",
+  "awardPoints": "Punkte vergeben",
+  "award": "Vergeben",
+  "awarding": "Vergebe…",
+  "awardSuccess": "{amount} Punkte an {username} vergeben.",
+  "memberIdPlaceholder": "Mitglieds-ID",
+  "amountPlaceholder": "Anzahl",
+  "error": {
+    "load": "Daten konnten nicht geladen werden. Bitte versuche es erneut.",
+    "award": "Punkte konnten nicht vergeben werden. Bitte versuche es erneut."
+  }
+}

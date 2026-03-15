@@ -1,10 +1,10 @@
 {
-  "id": "community-points",
-  "name": "Community Points",
+  "id": "your-app-id",
+  "name": "Your App Name",
   "version": "1.0.0",
   "author": "your-github-username",
-  "description": "A points and leaderboard system that rewards community members for voice activity and other engagement.",
-  "repositoryUrl": "https://github.com/your-github-username/community-points",
+  "description": "A short description of what your app does.",
+  "repositoryUrl": "https://github.com/your-github-username/your-app-id",
   "license": "MIT",
   "compatibility": {
     "core": {
@@ -14,33 +14,28 @@
   "navigation": {
     "rail": [
       {
-        "id": "points",
+        "id": "your-app-id",
         "icon": "star",
-        "label": "Points",
-        "to": "/apps/community-points",
+        "label": "Your App",
+        "to": "/apps/your-app-id",
         "order": 50,
         "requiredRoles": ["user"]
       }
     ],
     "panelGroups": [
       {
-        "id": "points-group",
-        "railItemId": "points",
+        "id": "your-app-id-group",
+        "railItemId": "your-app-id",
         "items": [
           {
-            "id": "points-overview",
+            "id": "your-app-id-overview",
             "label": "Overview",
-            "to": "/apps/community-points"
+            "to": "/apps/your-app-id"
           },
           {
-            "id": "points-leaderboard",
-            "label": "Leaderboard",
-            "to": "/apps/community-points/leaderboard"
-          },
-          {
-            "id": "points-admin",
+            "id": "your-app-id-admin",
             "label": "Manage",
-            "to": "/apps/community-points/admin",
+            "to": "/apps/your-app-id/admin",
             "requiredRoles": ["moderator"]
           }
         ]
@@ -52,78 +47,34 @@
       "id": "read:member",
       "label": "Read members",
       "description": "Read member profiles and roles"
-    },
-    {
-      "id": "write:member",
-      "label": "Write members",
-      "description": "Update member point balances"
-    },
-    {
-      "id": "read:voice",
-      "label": "Read voice activity",
-      "description": "Track voice channel activity"
     }
   ],
   "pages": [
     {
-      "id": "points-overview",
-      "path": "/apps/community-points",
-      "title": "Points Overview",
-      "requiredRoles": ["user"]
-    },
-    {
-      "id": "points-leaderboard",
-      "path": "/apps/community-points/leaderboard",
-      "title": "Leaderboard",
+      "id": "your-app-id-overview",
+      "path": "/apps/your-app-id",
+      "title": "Overview",
       "requiredRoles": ["user"]
     }
   ],
   "apiRoutes": [
     {
       "method": "GET",
-      "path": "/api/apps/community-points/stats",
-      "handler": "src/api/stats.get.ts",
+      "path": "/api/apps/your-app-id/data",
+      "handler": "src/api/data.get.ts",
       "requiredRoles": ["user"]
-    },
-    {
-      "method": "POST",
-      "path": "/api/apps/community-points/award",
-      "handler": "src/api/award.post.ts",
-      "requiredRoles": ["moderator"]
     }
   ],
   "botHooks": ["onVoiceActivity", "onRoleChange"],
   "configFields": [
     {
-      "key": "pointsPerMinute",
-      "type": "number",
-      "label": "Points per voice minute",
-      "description": "How many points a member earns for each minute spent in a voice channel.",
-      "defaultValue": 1
-    },
-    {
-      "key": "leaderboardVisible",
+      "key": "exampleSetting",
       "type": "boolean",
-      "label": "Public leaderboard",
-      "description": "Whether the leaderboard is visible to all members or only moderators.",
+      "label": "Example setting",
+      "description": "Enable or disable an example feature.",
       "defaultValue": true
-    },
-    {
-      "key": "topTier",
-      "type": "select",
-      "label": "Top tier role",
-      "description": "The role automatically assigned to the top 3 members on the leaderboard.",
-      "options": ["bronze", "silver", "gold"],
-      "defaultValue": "gold"
-    },
-    {
-      "key": "welcomeMessage",
-      "type": "string",
-      "label": "Welcome message",
-      "description": "Message sent to new members when they join. Supports {username} placeholder.",
-      "defaultValue": "Welcome {username}! You start with 0 points."
     }
   ],
   "requiredEnv": [],
-  "installNotes": "After installation, configure 'Points per voice minute' in the app settings. Ensure the bot has permission to read voice channel state. The leaderboard updates every 5 minutes automatically."
+  "installNotes": "Describe any post-install steps here."
 }

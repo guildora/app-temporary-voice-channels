@@ -38,6 +38,9 @@ The `manifest.json` file at the repo root defines your app. It is fetched by the
   // ── Bot Hooks ─────────────────────────────────────────────────────────
   "botHooks": ["onVoiceActivity"],
 
+  // ── Bot Commands ──────────────────────────────────────────────────────
+  "botCommands": [/* see below */],
+
   // ── Config Fields ─────────────────────────────────────────────────────
   "configFields": [/* see below */],
 
@@ -116,7 +119,26 @@ Available keys: `read:member`, `write:member`, `read:messages`, `write:messages`
 
 ## botHooks
 
-Array of event names: `"onVoiceActivity"` | `"onRoleChange"` | `"onMessage"` | `"onMemberJoin"`
+Array of event names: `"onVoiceActivity"` | `"onRoleChange"` | `"onMemberJoin"` | `"onInteraction"`
+
+## botCommands
+
+Declares slash commands that the bot registers with Discord when the app is activated. Each command triggers the `onInteraction` hook in `src/bot/hooks.ts`.
+
+```jsonc
+{
+  "name": "my-command",           // required | slash command name (lowercase, no spaces)
+  "description": "Does something", // required | shown in Discord command picker
+  "nameLocalizations": {           // optional | translated command names
+    "de": "mein-befehl"
+  },
+  "descriptionLocalizations": {    // optional | translated descriptions
+    "de": "Macht etwas"
+  }
+}
+```
+
+Commands are deployed to Discord automatically when an app is installed, activated, or deactivated.
 
 ## configFields
 

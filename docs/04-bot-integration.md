@@ -2,7 +2,7 @@
 
 ## Overview
 
-The bot processes guild events. Your app can react to 4 event types by exporting handlers from `src/bot/hooks.ts`.
+The bot processes guild events and slash commands. Your app can react to events by exporting handlers from `src/bot/hooks.ts`, and register Discord slash commands via `manifest.botCommands`.
 
 All hooks receive a typed payload and a `BotContext`.
 
@@ -10,13 +10,13 @@ All hooks receive a typed payload and a `BotContext`.
 
 ```typescript
 // src/bot/hooks.ts
-import type { BotContext, VoiceActivityPayload, RoleChangePayload, MessagePayload, MemberJoinPayload } from '@guildora/app-sdk'
+import type { BotContext, VoiceActivityPayload, RoleChangePayload, MemberJoinPayload, InteractionPayload } from '@guildora/app-sdk'
 
 // Only export handlers for events listed in manifest.botHooks
 export async function onVoiceActivity(payload: VoiceActivityPayload, ctx: BotContext) { }
 export async function onRoleChange(payload: RoleChangePayload, ctx: BotContext) { }
-export async function onMessage(payload: MessagePayload, ctx: BotContext) { }
 export async function onMemberJoin(payload: MemberJoinPayload, ctx: BotContext) { }
+export async function onInteraction(payload: InteractionPayload, ctx: BotContext) { }
 ```
 
 **Important**: Export only the hooks you've declared in `manifest.botHooks`. Exporting undeclared hooks is ignored but considered bad practice.
@@ -133,6 +133,36 @@ export async function onMemberJoin(payload: MemberJoinPayload, ctx: BotContext) 
   }
 }
 ```
+
+### onInteraction
+
+Fires when a user runs one of the app's slash commands (declared in `manifest.botCommands`). Declare `"onInteraction"` in `manifest.botHooks` to receive these events.
+
+```typescript
+interface InteractionPayload {
+  commandName: string   // name of the slash command that was invoked
+  memberId: string
+  guildId: string
+  channelId: string
+}
+
+export async function onInteraction(payload: InteractionPayload, ctx: BotContext) {
+  if (payload.commandName === 'my-command') {
+    const channelId = ctx.config.announcementChannelId
+    if (channelId) {
+      await ctx.bot.sendMessage(channelId, `/${payload.commandName} used by <@${payload.memberId}>`)
+    }
+  }
+}
+```
+
+**Note**: The bot replies ephemerally to acknowledge the command automatically. Your `onInteraction` handler runs as a fire-and-forget side effect — do not attempt to reply to the interaction from the hook.
+
+## Slash Commands
+
+Declare slash commands in `manifest.botCommands` (see [02-manifest.md](./02-manifest.md#botcommands)). Commands are deployed to Discord automatically on app activation/deactivation and on bot startup.
+
+To handle a command, declare `"onInteraction"` in `manifest.botHooks` and export an `onInteraction` handler in `src/bot/hooks.ts`.
 
 ## DB Patterns
 

@@ -78,6 +78,9 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useI18n } from '@guildora/hub'
+
 const { t } = useI18n()
 
 const message = ref('')

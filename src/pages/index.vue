@@ -79,6 +79,8 @@
 </template>
 
 <script setup>
+import { useI18n, useAuth, useFetch } from '@guildora/hub'
+
 const { t } = useI18n()
 const { user, hasRole } = useAuth()
 

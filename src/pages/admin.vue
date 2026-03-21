@@ -90,6 +90,8 @@
 </template>
 
 <script setup>
+import { useI18n, useFetch } from '@guildora/hub'
+
 const { t } = useI18n()
 
 const { data: config, pending: pendingConfig, error: configError } = await useFetch('/api/apps/guildora-app-template/config')

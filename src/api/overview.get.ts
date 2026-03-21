@@ -1,15 +1,21 @@
-// GET /api/apps/guildora-app-template/overview
-// Returns a community overview for the App page.
-// Access: requiredRoles: ["user"] (enforced by host before this runs)
+import { loadTempVoiceConfig } from '../bot/configLoader'
+
+// GET /api/apps/temporary-voice-channels/overview
+// Returns app-level runtime state for user-facing pages.
 
 export default defineEventHandler(async (event) => {
-  const { db } = event.context.guildora
+  const { config, db } = event.context.guildora
+  const runtimeConfig = loadTempVoiceConfig(config as Record<string, unknown>)
 
-  // Count tracked members (any key under the `member:` prefix)
-  const members = await db.list('member:')
+  const index = await db.get('tempvc:managed-index')
+  const managedChannels = Array.isArray(index) ? index.length : 0
 
   return {
-    membersTracked: members.length,
-    appActive: true
+    // Backward-compatible alias for the starter index page.
+    membersTracked: managedChannels,
+    appActive: runtimeConfig.enabled,
+    managedChannels,
+    lobbyConfigured: Boolean(runtimeConfig.lobbyChannelId),
+    categoryConfigured: Boolean(runtimeConfig.temporaryVoiceCategoryId)
   }
 })

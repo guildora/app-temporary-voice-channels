@@ -94,6 +94,6 @@ import { useI18n, useFetch } from '@guildora/hub'
 
 const { t } = useI18n()
 
-const { data: config, pending: pendingConfig, error: configError } = await useFetch('/api/apps/guildora-app-template/config')
-const { data: settings, pending: pendingSettings, error: settingsError } = await useFetch('/api/apps/guildora-app-template/settings')
+const { data: config, pending: pendingConfig, error: configError } = await useFetch('/api/apps/temporary-voice-channels/config')
+const { data: settings, pending: pendingSettings, error: settingsError } = await useFetch('/api/apps/temporary-voice-channels/settings')
 </script>

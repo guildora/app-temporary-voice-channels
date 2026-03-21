@@ -1,13 +1,24 @@
-// GET /api/apps/guildora-app-template/config
-// Returns the current app config values. Restricted to admins.
-// Access: requiredRoles: ["admin"] (enforced by host before this runs)
+import { loadTempVoiceConfig } from '../bot/configLoader'
+
+// GET /api/apps/temporary-voice-channels/config
+// Returns normalized app config values. Restricted to admins.
 
 export default defineEventHandler(async (event) => {
-  const { config } = event.context.guildora
+  const normalized = loadTempVoiceConfig(event.context.guildora.config as Record<string, unknown>)
 
   return {
-    welcomeEnabled: config.welcomeEnabled ?? true,
-    welcomeMessage: config.welcomeMessage ?? 'Welcome to the server, {username}!',
-    announcementChannelId: config.announcementChannelId ?? null
+    // Backward-compatible aliases for the starter admin page.
+    welcomeEnabled: normalized.enabled,
+    welcomeMessage: normalized.defaultChannelName,
+    announcementChannelId: normalized.lobbyChannelId || null,
+
+    enabled: normalized.enabled,
+    lobbyChannelId: normalized.lobbyChannelId,
+    temporaryVoiceCategoryId: normalized.temporaryVoiceCategoryId,
+    defaultChannelIcon: normalized.defaultChannelIcon,
+    defaultChannelName: normalized.defaultChannelName,
+    maxManagedChannels: normalized.maxManagedChannels,
+    renameEnabled: normalized.renameEnabled,
+    activityTrackingEnabled: normalized.activityTrackingEnabled
   }
 })

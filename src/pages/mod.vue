@@ -98,7 +98,7 @@ async function sendAnnouncement() {
   noChannel.value = false
 
   try {
-    await $fetch('/api/apps/guildora-app-template/announce', {
+    await $fetch('/api/apps/temporary-voice-channels/announce', {
       method: 'POST',
       body: { message: message.value.trim() }
     })

@@ -1,73 +1,188 @@
 {
-  "id": "guildora-app-template",
-  "name": "Template",
+  "id": "temporary-voice-channels",
+  "name": "Temporary Voice Channels",
   "version": "1.0.0",
   "author": "your-github-username",
-  "description": "The official Guildora app template — demonstrates all integration patterns: Hub pages, API routes, bot hooks, config fields, and i18n.",
-  "repositoryUrl": "https://github.com/your-github-username/guildora-app-template",
+  "description": "Creates managed temporary voice channels with icon-based naming, auto cleanup, and hub-managed runtime configuration.",
+  "repositoryUrl": "https://github.com/your-github-username/temporary-voice-channels",
   "license": "MIT",
   "compatibility": { "core": { "minVersion": "0.1.0" } },
   "navigation": {
     "rail": [
-      { "id": "guildora-app-template", "icon": "proicons:apps", "label": "Template",
-        "to": "/apps/guildora-app-template", "order": 50, "requiredRoles": ["user"] }
+      {
+        "id": "temporary-voice-channels",
+        "icon": "chat",
+        "label": "Voice Rooms",
+        "to": "/apps/temporary-voice-channels",
+        "order": 50,
+        "requiredRoles": ["user"]
+      }
     ],
-    "panelGroups": [{
-      "id": "guildora-app-template-group",
-      "railItemId": "guildora-app-template",
-      "items": [
-        { "id": "template-app",   "label": "App",        "to": "/apps/guildora-app-template",       "requiredRoles": ["moderator"] },
-        { "id": "template-mod",   "label": "Moderation", "to": "/apps/guildora-app-template/mod",   "requiredRoles": ["moderator"] },
-        { "id": "template-admin", "label": "Admin",       "to": "/apps/guildora-app-template/admin", "requiredRoles": ["admin"] }
-      ]
-    }]
+    "panelGroups": [
+      {
+        "id": "temporary-voice-channels-group",
+        "railItemId": "temporary-voice-channels",
+        "items": [
+          {
+            "id": "temporary-voice-channels-app",
+            "label": "App",
+            "to": "/apps/temporary-voice-channels",
+            "requiredRoles": ["moderator"]
+          },
+          {
+            "id": "temporary-voice-channels-mod",
+            "label": "Moderation",
+            "to": "/apps/temporary-voice-channels/mod",
+            "requiredRoles": ["moderator"]
+          },
+          {
+            "id": "temporary-voice-channels-admin",
+            "label": "Admin",
+            "to": "/apps/temporary-voice-channels/admin",
+            "requiredRoles": ["admin"]
+          }
+        ]
+      }
+    ]
   },
   "permissions": [
-    { "id": "read:member",    "label": "Read members",     "description": "Read member profiles and roles", "required": false },
-    { "id": "write:messages", "label": "Send messages",    "description": "Send messages to channels",      "required": false }
+    {
+      "id": "read:voice",
+      "label": "Read voice state",
+      "description": "Read voice channel joins, leaves, moves, and occupancy.",
+      "required": false
+    },
+    {
+      "id": "write:member",
+      "label": "Move members",
+      "description": "Move members from the lobby into temporary managed channels.",
+      "required": false
+    },
+    {
+      "id": "read:member",
+      "label": "Read members",
+      "description": "Read member voice state for move and tracking logic.",
+      "required": false
+    }
   ],
   "pages": [
-    { "id": "template-app",   "path": "/apps/guildora-app-template",       "title": "Template",   "requiredRoles": ["user"],      "component": "src/pages/index.vue" },
-    { "id": "template-mod",   "path": "/apps/guildora-app-template/mod",   "title": "Moderation", "requiredRoles": ["moderator"], "component": "src/pages/mod.vue" },
-    { "id": "template-admin", "path": "/apps/guildora-app-template/admin", "title": "Admin",      "requiredRoles": ["admin"],     "component": "src/pages/admin.vue" }
+    {
+      "id": "temporary-voice-channels-app",
+      "path": "/apps/temporary-voice-channels",
+      "title": "Voice Rooms",
+      "requiredRoles": ["user"],
+      "component": "src/pages/index.vue"
+    },
+    {
+      "id": "temporary-voice-channels-mod",
+      "path": "/apps/temporary-voice-channels/mod",
+      "title": "Moderation",
+      "requiredRoles": ["moderator"],
+      "component": "src/pages/mod.vue"
+    },
+    {
+      "id": "temporary-voice-channels-admin",
+      "path": "/apps/temporary-voice-channels/admin",
+      "title": "Admin",
+      "requiredRoles": ["admin"],
+      "component": "src/pages/admin.vue"
+    }
   ],
   "apiRoutes": [
-    { "method": "GET",  "path": "/api/apps/guildora-app-template/overview",  "handler": "src/api/overview.get.ts",  "requiredRoles": ["user"] },
-    { "method": "POST", "path": "/api/apps/guildora-app-template/announce",  "handler": "src/api/announce.post.ts", "requiredRoles": ["moderator"] },
-    { "method": "GET",  "path": "/api/apps/guildora-app-template/config",    "handler": "src/api/config.get.ts",    "requiredRoles": ["admin"] },
-    { "method": "GET",  "path": "/api/apps/guildora-app-template/settings",  "handler": "src/api/settings.get.ts",  "requiredRoles": ["admin"] }
+    {
+      "method": "GET",
+      "path": "/api/apps/temporary-voice-channels/overview",
+      "handler": "src/api/overview.get.ts",
+      "requiredRoles": ["user"]
+    },
+    {
+      "method": "GET",
+      "path": "/api/apps/temporary-voice-channels/config",
+      "handler": "src/api/config.get.ts",
+      "requiredRoles": ["admin"]
+    },
+    {
+      "method": "GET",
+      "path": "/api/apps/temporary-voice-channels/settings",
+      "handler": "src/api/settings.get.ts",
+      "requiredRoles": ["admin"]
+    },
+    {
+      "method": "POST",
+      "path": "/api/apps/temporary-voice-channels/announce",
+      "handler": "src/api/announce.post.ts",
+      "requiredRoles": ["moderator"]
+    }
   ],
   "botHooks": ["onVoiceActivity", "onRoleChange", "onMemberJoin", "onInteraction"],
   "botCommands": [
     {
-      "name": "template",
-      "description": "Show the Template app status on this server.",
-      "nameLocalizations": { "de": "template" },
-      "descriptionLocalizations": { "de": "Zeigt den Status der Template-App auf diesem Server." }
+      "name": "voice-room",
+      "description": "Open the icon selector for your temporary voice room.",
+      "nameLocalizations": { "de": "voice-room" },
+      "descriptionLocalizations": {
+        "de": "Open the icon selector for your temporary voice room."
+      }
     }
   ],
   "configFields": [
     {
-      "key": "welcomeEnabled",
+      "key": "enabled",
       "type": "boolean",
-      "label": "Enable welcome messages",
-      "description": "Send a welcome message when a new member joins the server.",
+      "label": "Enable temporary voice channels",
+      "description": "Master switch for temporary voice channel automation.",
       "defaultValue": true
     },
     {
-      "key": "welcomeMessage",
+      "key": "lobbyChannelId",
       "type": "string",
-      "label": "Welcome message",
-      "description": "Message sent on member join. Use {username} as a placeholder.",
-      "defaultValue": "Welcome to the server, {username}!"
+      "label": "Lobby voice channel ID",
+      "description": "Joining this voice channel creates a temporary managed channel.",
+      "defaultValue": ""
     },
     {
-      "key": "announcementChannelId",
+      "key": "temporaryVoiceCategoryId",
       "type": "string",
-      "label": "Announcement channel ID",
-      "description": "Discord channel ID where moderator announcements are posted."
+      "label": "Temporary voice category ID",
+      "description": "Category where temporary managed channels are created.",
+      "defaultValue": ""
+    },
+    {
+      "key": "defaultChannelIcon",
+      "type": "string",
+      "label": "Default channel icon",
+      "description": "Preferred icon for new channels when available (for example 🔵).",
+      "defaultValue": "🔵"
+    },
+    {
+      "key": "defaultChannelName",
+      "type": "string",
+      "label": "Default channel name",
+      "description": "Base name appended after the icon for generated channels.",
+      "defaultValue": "Voice Room"
+    },
+    {
+      "key": "maxManagedChannels",
+      "type": "number",
+      "label": "Maximum managed channels",
+      "description": "Upper limit for concurrently managed temporary channels.",
+      "defaultValue": 50
+    },
+    {
+      "key": "renameEnabled",
+      "type": "boolean",
+      "label": "Enable icon rename menu",
+      "description": "Allow icon changes through the interactive select menu.",
+      "defaultValue": true
+    },
+    {
+      "key": "activityTrackingEnabled",
+      "type": "boolean",
+      "label": "Enable voice activity tracking",
+      "description": "Track voice activity duration separately from channel lifecycle logic.",
+      "defaultValue": true
     }
   ],
   "requiredEnv": [],
-  "installNotes": "Set welcomeMessage and announcementChannelId in App Settings to get started."
+  "installNotes": "Configure lobbyChannelId and temporaryVoiceCategoryId in Admin before enabling automation."
 }

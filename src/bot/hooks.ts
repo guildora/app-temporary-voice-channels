@@ -1,75 +1,26 @@
-// Bot hook handlers for Template.
-// All hooks declared in manifest.botHooks must be exported here.
-
 import type {
   BotContext,
-  VoiceActivityPayload,
-  RoleChangePayload,
+  InteractionPayload,
   MemberJoinPayload,
-  InteractionPayload
+  RoleChangePayload,
+  VoiceActivityPayload
 } from '@guildora/app-sdk'
+import { handleTemporaryVoiceLifecycle, handleVoiceActivityTracker } from './events'
+import { handleTemporaryVoiceInteractions } from './interactions'
 
-/**
- * onVoiceActivity — fires when a member joins, leaves, or moves in voice.
- * Tracks member activity in the KV store.
- */
-export async function onVoiceActivity(payload: VoiceActivityPayload, ctx: BotContext) {
-  if (payload.action === 'join') {
-    // Record that this member has been active
-    await ctx.db.set(`member:${payload.memberId}`, {
-      lastSeen: new Date().toISOString(),
-      lastChannel: payload.channelId
-    })
-  }
+export async function onVoiceActivity(payload: VoiceActivityPayload, ctx: BotContext): Promise<void> {
+  await handleTemporaryVoiceLifecycle(payload, ctx)
+  await handleVoiceActivityTracker(payload, ctx)
 }
 
-/**
- * onRoleChange — fires when a member's roles are updated.
- * Logs the role change to the KV store for audit purposes.
- */
-export async function onRoleChange(payload: RoleChangePayload, ctx: BotContext) {
-  if (payload.addedRoles.length > 0 || payload.removedRoles.length > 0) {
-    await ctx.db.set(`rolechange:${payload.memberId}:${Date.now()}`, {
-      added: payload.addedRoles,
-      removed: payload.removedRoles,
-      at: new Date().toISOString()
-    })
-  }
+export async function onInteraction(payload: InteractionPayload, ctx: BotContext): Promise<void> {
+  await handleTemporaryVoiceInteractions(payload, ctx)
 }
 
-/**
- * onMemberJoin — fires when a new member joins the Discord server.
- * Sends a configurable welcome message if enabled.
- */
-export async function onMemberJoin(payload: MemberJoinPayload, ctx: BotContext) {
-  const welcomeEnabled = (ctx.config.welcomeEnabled as boolean) ?? true
-  if (!welcomeEnabled) return
-
-  const announcementChannelId = ctx.config.announcementChannelId as string | undefined
-  if (!announcementChannelId) return
-
-  const template = (ctx.config.welcomeMessage as string) ?? 'Welcome to the server, {username}!'
-  const message = template.replace('{username}', `<@${payload.memberId}>`)
-
-  await ctx.bot.sendMessage(announcementChannelId, message)
-
-  // Track the new member
-  await ctx.db.set(`member:${payload.memberId}`, {
-    joinedAt: payload.joinedAt,
-    lastSeen: payload.joinedAt
-  })
+export async function onRoleChange(_payload: RoleChangePayload, _ctx: BotContext): Promise<void> {
+  // Intentionally empty: this app does not use role-change hooks.
 }
 
-/**
- * onInteraction — fires when a slash command is used.
- * Handles the /template command.
- */
-export async function onInteraction(payload: InteractionPayload, ctx: BotContext) {
-  if (payload.commandName !== 'template') return
-
-  // Log the interaction
-  await ctx.db.set(`audit:${payload.memberId}:${Date.now()}`, {
-    command: 'template',
-    at: payload.occurredAt
-  })
+export async function onMemberJoin(_payload: MemberJoinPayload, _ctx: BotContext): Promise<void> {
+  // Intentionally empty: this app does not use member-join hooks.
 }

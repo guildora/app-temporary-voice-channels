@@ -67,7 +67,7 @@
       <!-- Moderator shortcut -->
       <div v-if="hasRole('moderator')">
         <NuxtLink
-          to="/apps/guildora-app-template/mod"
+          to="/apps/temporary-voice-channels/mod"
           class="text-sm font-nunito"
           style="color: var(--color-accent, #ff206e); text-decoration: underline;"
         >
@@ -84,5 +84,5 @@ import { useI18n, useAuth, useFetch } from '@guildora/hub'
 const { t } = useI18n()
 const { user, hasRole } = useAuth()
 
-const { data: overview, pending, error } = await useFetch('/api/apps/guildora-app-template/overview')
+const { data: overview, pending, error } = await useFetch('/api/apps/temporary-voice-channels/overview')
 </script>

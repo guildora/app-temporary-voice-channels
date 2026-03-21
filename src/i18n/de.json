@@ -6,67 +6,67 @@
   },
   "app": {
     "title": "Template App",
-    "subtitle": "Eine Community-Übersicht, angetrieben vom Guildora App-Template.",
-    "welcome": "Willkommen zurück, {username}!",
+    "subtitle": "A community overview powered by the Guildora app template.",
+    "welcome": "Welcome back, {username}!",
     "overview": {
-      "heading": "Community-Übersicht",
-      "membersTracked": "Erfasste Mitglieder",
-      "appActive": "App-Status",
-      "active": "Aktiv",
-      "noData": "Noch keine Daten. Die App befüllt sich, wenn Mitglieder interagieren."
+      "heading": "Community Overview",
+      "membersTracked": "Members Tracked",
+      "appActive": "App Status",
+      "active": "Active",
+      "noData": "No data yet. The app will populate as members interact."
     }
   },
   "mod": {
     "title": "Moderation",
-    "subtitle": "Ankündigungen senden und letzte Moderationsaktionen überprüfen.",
+    "subtitle": "Send announcements and review recent moderation actions.",
     "announce": {
-      "heading": "Ankündigung senden",
-      "messagePlaceholder": "Schreibe deine Ankündigung…",
-      "submit": "Senden",
-      "submitting": "Sende…",
-      "success": "Ankündigung wurde an den konfigurierten Kanal gesendet.",
-      "noChannel": "Kein Ankündigungskanal konfiguriert. Setze einen in Admin → App-Einstellungen."
+      "heading": "Send Announcement",
+      "messagePlaceholder": "Write your announcement…",
+      "submit": "Send",
+      "submitting": "Sending…",
+      "success": "Announcement sent to the configured channel.",
+      "noChannel": "No announcement channel configured. Set one in Admin → App Settings."
     },
     "log": {
-      "heading": "Letzte Aktionen",
-      "empty": "Keine Aktionen in dieser Sitzung aufgezeichnet.",
-      "announced": "Ankündigung gesendet: \"{message}\""
+      "heading": "Recent Actions",
+      "empty": "No actions recorded this session.",
+      "announced": "Sent announcement: \"{message}\""
     }
   },
   "admin": {
     "title": "Admin",
-    "subtitle": "App-Konfiguration und zusammengefasste Statistiken anzeigen.",
+    "subtitle": "View app configuration and aggregate statistics.",
     "config": {
-      "heading": "Aktuelle Konfiguration",
-      "welcomeEnabled": "Willkommensnachrichten",
-      "welcomeMessage": "Willkommensnachricht",
-      "announcementChannelId": "Ankündigungskanal-ID",
-      "notSet": "Nicht konfiguriert",
-      "enabled": "✓ Aktiviert",
-      "disabled": "✗ Deaktiviert"
+      "heading": "Current Configuration",
+      "welcomeEnabled": "Welcome Messages",
+      "welcomeMessage": "Welcome Message",
+      "announcementChannelId": "Announcement Channel ID",
+      "notSet": "Not configured",
+      "enabled": "✓ Enabled",
+      "disabled": "✗ Disabled"
     },
     "settings": {
-      "heading": "App-Statistiken",
-      "version": "App-Version",
-      "totalMembers": "Erfasste Mitglieder"
+      "heading": "App Statistics",
+      "version": "App Version",
+      "totalMembers": "Members Tracked"
     }
   },
   "bot": {
     "command": {
       "template": {
-        "response": "Die Template-App ist auf diesem Server aktiv. Nutze sie, um alle Guildora-Integrationsmuster zu erkunden.",
-        "notActive": "Die Template-App ist installiert, aber noch nicht konfiguriert."
+        "response": "The Template app is active on this server. Use it to explore all Guildora integration patterns.",
+        "notActive": "The Template app is installed but not yet configured."
       }
     }
   },
   "error": {
-    "load": "Daten konnten nicht geladen werden. Bitte die Seite neu laden.",
-    "announce": "Ankündigung konnte nicht gesendet werden: {message}",
-    "settings": "Einstellungen konnten nicht geladen werden. Bitte die Seite neu laden.",
-    "forbidden": "Du hast keine Berechtigung, diese Seite anzuzeigen."
+    "load": "Failed to load data. Please refresh the page.",
+    "announce": "Failed to send announcement: {message}",
+    "settings": "Failed to load settings. Please refresh the page.",
+    "forbidden": "You do not have permission to view this page."
   },
-  "loading": "Lädt…",
-  "back": "Zurück",
-  "save": "Speichern",
-  "cancel": "Abbrechen"
+  "loading": "Loading…",
+  "back": "Back",
+  "save": "Save",
+  "cancel": "Cancel"
 }

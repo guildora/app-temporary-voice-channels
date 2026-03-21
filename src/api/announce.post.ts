@@ -1,4 +1,4 @@
-// POST /api/apps/guildora-app-template/announce
+// POST /api/apps/temporary-voice-channels/announce
 // Sends an announcement to the configured channel. Restricted to moderators.
 // Access: requiredRoles: ["moderator"] (enforced by host before this runs)
 //

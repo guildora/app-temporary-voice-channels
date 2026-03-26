@@ -25,19 +25,19 @@
         "items": [
           {
             "id": "temporary-voice-channels-app",
-            "label": "App",
+            "label": "Voice Rooms",
             "to": "/apps/temporary-voice-channels",
-            "requiredRoles": ["moderator"]
+            "requiredRoles": ["user"]
           },
           {
-            "id": "temporary-voice-channels-mod",
-            "label": "Moderation",
-            "to": "/apps/temporary-voice-channels/mod",
+            "id": "temporary-voice-channels-settings",
+            "label": "Einstellungen",
+            "to": "/apps/temporary-voice-channels/settings",
             "requiredRoles": ["moderator"]
           },
           {
             "id": "temporary-voice-channels-admin",
-            "label": "Admin",
+            "label": "Zugriffsrechte",
             "to": "/apps/temporary-voice-channels/admin",
             "requiredRoles": ["admin"]
           }
@@ -74,16 +74,16 @@
       "component": "src/pages/index.vue"
     },
     {
-      "id": "temporary-voice-channels-mod",
-      "path": "/apps/temporary-voice-channels/mod",
-      "title": "Moderation",
+      "id": "temporary-voice-channels-settings",
+      "path": "/apps/temporary-voice-channels/settings",
+      "title": "Einstellungen",
       "requiredRoles": ["moderator"],
-      "component": "src/pages/mod.vue"
+      "component": "src/pages/settings.vue"
     },
     {
       "id": "temporary-voice-channels-admin",
       "path": "/apps/temporary-voice-channels/admin",
-      "title": "Admin",
+      "title": "Zugriffsrechte",
       "requiredRoles": ["admin"],
       "component": "src/pages/admin.vue"
     }
@@ -99,13 +99,19 @@
       "method": "GET",
       "path": "/api/apps/temporary-voice-channels/config",
       "handler": "src/api/config.get.ts",
-      "requiredRoles": ["admin"]
+      "requiredRoles": ["moderator"]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/apps/temporary-voice-channels/config",
+      "handler": "src/api/config.put.ts",
+      "requiredRoles": ["moderator"]
     },
     {
       "method": "GET",
       "path": "/api/apps/temporary-voice-channels/settings",
       "handler": "src/api/settings.get.ts",
-      "requiredRoles": ["admin"]
+      "requiredRoles": ["moderator"]
     },
     {
       "method": "POST",
@@ -121,7 +127,7 @@
       "description": "Open the icon selector for your temporary voice room.",
       "nameLocalizations": { "de": "voice-room" },
       "descriptionLocalizations": {
-        "de": "Open the icon selector for your temporary voice room."
+        "de": "Öffnet das Icon-Auswahlmenü für deinen temporären Voice-Kanal."
       }
     }
   ],
@@ -129,60 +135,68 @@
     {
       "key": "enabled",
       "type": "boolean",
-      "label": "Enable temporary voice channels",
-      "description": "Master switch for temporary voice channel automation.",
+      "label": "Temporäre Voice-Kanäle aktivieren",
+      "description": "Master-Schalter für die automatische Verwaltung temporärer Voice-Kanäle.",
       "defaultValue": true
     },
     {
       "key": "lobbyChannelId",
       "type": "string",
-      "label": "Lobby voice channel ID",
-      "description": "Joining this voice channel creates a temporary managed channel.",
+      "label": "Lobby-Kanal ID",
+      "description": "Beim Beitreten zu diesem Voice-Kanal wird automatisch ein temporärer Kanal erstellt.",
       "defaultValue": ""
     },
     {
       "key": "temporaryVoiceCategoryId",
       "type": "string",
-      "label": "Temporary voice category ID",
-      "description": "Category where temporary managed channels are created.",
+      "label": "Kategorie ID",
+      "description": "Kategorie, in der die temporären Kanäle erstellt werden.",
       "defaultValue": ""
     },
     {
       "key": "defaultChannelIcon",
       "type": "string",
-      "label": "Default channel icon",
-      "description": "Preferred icon for new channels when available (for example 🔵).",
+      "label": "Standard-Icon / Emoji",
+      "description": "Emoji, das neuen Kanälen vorangestellt wird (z.B. 🔵).",
       "defaultValue": "🔵"
     },
     {
       "key": "defaultChannelName",
       "type": "string",
-      "label": "Default channel name",
-      "description": "Base name appended after the icon for generated channels.",
+      "label": "Kanal-Bezeichnung",
+      "description": "Basisname, der nach dem Icon für neue Kanäle verwendet wird.",
       "defaultValue": "Voice Room"
+    },
+    {
+      "key": "countingStyle",
+      "type": "select",
+      "label": "Zählstil",
+      "description": "Wie werden mehrere Kanäle nummeriert? Numerisch (Voice Room 1, 2, …) oder Emoji-basiert (🔵, 🟢, 🔴, …).",
+      "defaultValue": "numeric",
+      "options": ["numeric", "emoji"]
     },
     {
       "key": "maxManagedChannels",
       "type": "number",
-      "label": "Maximum managed channels",
-      "description": "Upper limit for concurrently managed temporary channels.",
+      "label": "Max. verwaltete Kanäle",
+      "description": "Maximale Anzahl gleichzeitig verwalteter temporärer Kanäle.",
       "defaultValue": 50
     },
     {
       "key": "renameEnabled",
       "type": "boolean",
-      "label": "Enable icon rename menu",
-      "description": "Allow icon changes through the interactive select menu.",
+      "label": "Icon-Umbenennungsmenü aktivieren",
+      "description": "Erlaubt Nutzern, ihr Kanal-Icon über ein Auswahlmenü zu ändern.",
       "defaultValue": true
     },
     {
       "key": "activityTrackingEnabled",
       "type": "boolean",
-      "label": "Enable voice activity tracking",
-      "description": "Track voice activity duration separately from channel lifecycle logic.",
+      "label": "Voice-Aktivität tracken",
+      "description": "Aufzeichnung der Voice-Aktivitätsdauer für Statistiken.",
       "defaultValue": true
     }
   ],
   "requiredEnv": [],
-  "installNotes": "Configure lobbyChannelId and temporaryVoiceCategoryId in Admin before enabling automation."
+  "installNotes": "Konfiguriere lobbyChannelId und temporaryVoiceCategoryId in den Einstellungen, bevor du die Automatisierung aktivierst."
 }

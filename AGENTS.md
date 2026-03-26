@@ -495,42 +495,76 @@ The host automatically selects the language based on the user's locale preferenc
 
 ## 8. Design System
 
-Guildora uses **Retro-morphism** — a design aesthetic combining retro/pixel-art elements with modern neumorphism.
+Guildora uses a clean, minimalist SaaS design system with subtle shadows, rounded corners, and professional typography.
 
 ### Key principles
-- **Font**: Nunito (rounded, friendly). Always use `font-nunito` class.
-- **Borders**: Slightly rounded corners (`rounded-lg`), subtle drop shadows.
-- **Colors**: Warm neutrals with vibrant accent colors. Use CSS variables from the host theme.
-- **Interactive elements**: Slight inset on press (shadow inversion).
+- **Font**: DM Sans. Set globally on `body` by the hub — apps inherit it automatically. Do not add any font class.
+- **Borders**: Rounded corners (`rounded-lg` for cards, `rounded` for buttons), subtle drop shadows.
+- **Colors**: Dark neutral backgrounds with vibrant accent colors. Use CSS variables from the host theme.
+- **Interactive elements**: Smooth transitions on hover/focus.
 
 ### CSS variables (host-provided)
 ```css
-var(--color-surface)      /* card/panel background */
-var(--color-surface-alt)  /* slightly elevated surface */
-var(--color-border)       /* border color */
-var(--color-text)         /* primary text */
-var(--color-text-muted)   /* secondary text */
-var(--color-accent)       /* primary accent (guild-configurable) */
-var(--color-accent-hover) /* hover state of accent */
+var(--color-surface-1)      /* page background */
+var(--color-surface-2)      /* card / panel background */
+var(--color-surface-3)      /* elevated surface (modals, dropdowns) */
+var(--color-line)            /* border color */
+var(--color-text-primary)    /* primary text */
+var(--color-text-secondary)  /* labels, secondary text */
+var(--color-text-tertiary)   /* placeholder, disabled text */
+var(--color-accent)          /* primary accent (guild-configurable) */
+var(--color-accent-dark)     /* hover state of accent */
+var(--color-success)         /* #22C55E */
+var(--color-error)           /* #EF4444 */
+var(--color-warning)         /* #F59E0B */
+var(--color-info)            /* #3B82F6 */
 ```
 
+### Hub CSS classes (safe to use directly)
+The hub's `main.css` provides these classes — use them instead of DaisyUI equivalents:
+
+- **Layout/Surface**: `.card`, `.stat`, `.modal-box`
+- **Feedback**: `.alert`, `.alert-info`, `.alert-success`, `.alert-warning`, `.alert-error`
+- **Buttons**: `.btn`, `.btn-primary`, `.btn-secondary`, `.btn-sm`, `.btn-xs`, `.btn-outline`, `.btn-ghost`, `.btn-error`
+- **Forms**: `.input`, `.select`, `.textarea`, `.field`, `.field__label`, `.field__control`, `.field__input`, `.field__select`, `.checkbox-field`, `.checkbox-field__input`
+- **Badges**: `.badge`, `.badge-primary`, `.badge-ghost`, `.badge-sm`
+- **Misc**: `.loading`, `.loading-spinner`, `.divider`, `.tabs`, `.tab`, `.tab-active`
+
 ### Tailwind
-Tailwind CSS is available. Use utility classes freely.
+Tailwind CSS is available. Use utility classes freely. For colors, always use inline CSS variables rather than Tailwind color utilities (they may not be generated for app SFCs since apps are loaded at runtime, not at build time):
 
 ```vue
 <template>
-  <!-- Good: Retro card component -->
-  <div class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg shadow-md p-4 font-nunito">
-    <h2 class="text-lg font-bold text-[var(--color-text)]">Title</h2>
-    <p class="text-sm text-[var(--color-text-muted)]">Subtitle</p>
+  <!-- Card example -->
+  <div class="card">
+    <div class="p-5">
+      <h2 class="text-base font-semibold text-[var(--color-text-primary)] mb-3">Title</h2>
+      <p class="text-sm text-[var(--color-text-secondary)]">Subtitle</p>
+    </div>
   </div>
+
+  <!-- Stats grid example -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div class="stat">
+      <div class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)] mb-1">Label</div>
+      <div class="text-2xl font-bold text-[var(--color-accent)]">42</div>
+    </div>
+  </div>
+
+  <!-- Checkbox example -->
+  <input type="checkbox" v-model="enabled" class="w-4 h-4" style="accent-color: var(--color-accent);" />
+
+  <!-- Link example -->
+  <a href="/some/path" class="text-sm text-[var(--color-accent)] hover:underline">Go somewhere →</a>
 </template>
 ```
 
 ### Do NOT
-- Import external CSS frameworks (only Tailwind is available)
+- Import external CSS frameworks (only Tailwind and hub's `main.css` are available)
 - Use hardcoded hex colors (use CSS variables)
-- Use system fonts — always `font-nunito`
+- Add font classes — DM Sans is inherited automatically, no class needed
+- Use DaisyUI compound sub-classes: `card-body`, `card-title`, `stat-title`, `stat-value`, `stats`, `stats-horizontal`, `stats-vertical`, `checkbox checkbox-primary`, `link link-primary` — these are not defined in the hub and will produce unstyled elements
+- Use Tailwind color utilities like `text-primary`, `text-success`, `text-error`, `bg-base-200`, `border-base-300` — use `text-[var(--color-*)]` / `border-[var(--color-line)]` inline instead
 
 ---
 
@@ -563,6 +597,14 @@ Result:
   }]
 }
 ```
+
+### Active state behavior
+
+The hub uses **most-specific-match** logic for panel items. When multiple items could match the current route via prefix (e.g. `/apps/temporary-voice-channels` matches `/apps/temporary-voice-channels/admin`), only the item with the **longest matching path** is shown as active. Sub-page items always take precedence over root items.
+
+- On `/apps/temporary-voice-channels` → "Voice Rooms" item is active
+- On `/apps/temporary-voice-channels/settings` → "Einstellungen" item is active (not "Voice Rooms")
+- On `/apps/temporary-voice-channels/admin` → "Zugriffsrechte" item is active (not "Voice Rooms")
 
 ---
 
@@ -616,7 +658,7 @@ To update a sideloaded app:
 |---------|-----|
 | Using `import` for host composables | Do NOT import — they are globally injected |
 | Hardcoded colors | Use `var(--color-*)` CSS variables |
-| Non-Nunito font | Always add `font-nunito` class |
+| Non-DM Sans font | Use the host theme's font (DM Sans), do not override |
 | Direct `fetch()` calls | Use `useFetch()` composable |
 
 ### Bot Hooks
@@ -645,7 +687,7 @@ Before publishing, verify:
 - [ ] `/api/apps/template/settings` returns 403 for non-admin
 - [ ] Config fields all have `defaultValue` values
 - [ ] Both `en.json` and `de.json` exist and have identical key structure
-- [ ] All Vue pages use `font-nunito` and CSS variables for colors
+- [ ] All Vue pages use hub CSS classes (`.card`, `.stat`, `.alert-*`, `.btn-*`) and CSS variables for colors — no DaisyUI compound sub-classes
 - [ ] App can be sideloaded from GitHub URL without errors
 - [ ] Navigation appears correctly in rail and panel
 - [ ] Plain `user` role: rail item visible, **no panel** → direct navigation

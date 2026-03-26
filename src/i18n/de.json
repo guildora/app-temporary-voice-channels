@@ -1,72 +1,91 @@
 {
   "nav": {
-    "app": "App",
-    "mod": "Moderation",
-    "admin": "Admin"
+    "app": "Voice Rooms",
+    "settings": "Einstellungen",
+    "admin": "Zugriffsrechte"
   },
   "app": {
-    "title": "Template App",
-    "subtitle": "A community overview powered by the Guildora app template.",
-    "welcome": "Welcome back, {username}!",
-    "overview": {
-      "heading": "Community Overview",
-      "membersTracked": "Members Tracked",
-      "appActive": "App Status",
-      "active": "Active",
-      "noData": "No data yet. The app will populate as members interact."
+    "title": "Voice Rooms",
+    "subtitle": "Übersicht deiner temporären Voice-Kanäle.",
+    "setup": {
+      "title": "Einrichtung unvollständig",
+      "lobbyMissing": "Kein Lobby-Kanal konfiguriert. Bitte Lobby-Kanal-ID in den Einstellungen hinterlegen.",
+      "categoryMissing": "Keine Kategorie konfiguriert. Bitte Kategorie-ID in den Einstellungen hinterlegen."
+    },
+    "status": {
+      "heading": "Aktueller Status",
+      "activeChannels": "Aktive Kanäle",
+      "appStatus": "App-Status",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "lobby": "Lobby-Kanal",
+      "category": "Voice-Kategorie",
+      "configured": "Konfiguriert",
+      "notConfigured": "Nicht konfiguriert"
     }
   },
-  "mod": {
-    "title": "Moderation",
-    "subtitle": "Send announcements and review recent moderation actions.",
-    "announce": {
-      "heading": "Send Announcement",
-      "messagePlaceholder": "Write your announcement…",
-      "submit": "Send",
-      "submitting": "Sending…",
-      "success": "Announcement sent to the configured channel.",
-      "noChannel": "No announcement channel configured. Set one in Admin → App Settings."
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Konfiguriere das Verhalten der temporären Voice-Kanäle.",
+    "save": "Einstellungen speichern",
+    "saving": "Speichern…",
+    "saveSuccess": "Einstellungen erfolgreich gespeichert.",
+    "saveError": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+    "config": {
+      "heading": "Kanal-Konfiguration",
+      "enabled": "Temporäre Voice-Kanäle aktivieren",
+      "enabledDesc": "Master-Schalter für die automatische Kanalverwaltung.",
+      "lobbyChannelId": "Lobby-Kanal ID",
+      "lobbyChannelIdDesc": "Beim Beitreten zu diesem Voice-Kanal wird automatisch ein temporärer Kanal erstellt.",
+      "categoryId": "Voice-Kategorie ID",
+      "categoryIdDesc": "Kategorie, in der die temporären Kanäle erstellt werden.",
+      "idPlaceholder": "Discord Kanal-/Kategorie-ID…",
+      "channelIcon": "Standard-Icon / Emoji",
+      "channelIconDesc": "Emoji, das neuen Kanalnamen vorangestellt wird (z.B. 🔵).",
+      "channelName": "Kanal-Bezeichnung",
+      "channelNameDesc": "Basisname, der nach dem Icon für neue Kanäle verwendet wird.",
+      "countingStyle": "Zählstil",
+      "countingStyleDesc": "Wie werden mehrere Kanäle nummeriert? Numerisch (Voice Room 1, 2, …) oder Emoji-Sequenz (🔵, 🟢, 🔴, …).",
+      "countingNumeric": "Numerisch (Voice Room 1, 2, 3…)",
+      "countingEmoji": "Emoji-Sequenz (🔵, 🟢, 🔴…)",
+      "maxChannels": "Max. verwaltete Kanäle",
+      "renameEnabled": "Icon-Umbenennungsmenü aktivieren",
+      "renameEnabledDesc": "Erlaubt Nutzern, ihr Kanal-Icon über ein Auswahlmenü zu ändern.",
+      "activityTracking": "Voice-Aktivität tracken",
+      "activityTrackingDesc": "Aufzeichnung der Voice-Aktivitätsdauer pro Mitglied für Statistiken."
     },
-    "log": {
-      "heading": "Recent Actions",
-      "empty": "No actions recorded this session.",
-      "announced": "Sent announcement: \"{message}\""
+    "stats": {
+      "heading": "Statistiken",
+      "managedChannels": "Verwaltete Kanäle",
+      "trackedMembers": "Getrackte Mitglieder",
+      "totalHours": "Gesamt-Stunden getrackt"
     }
   },
   "admin": {
-    "title": "Admin",
-    "subtitle": "View app configuration and aggregate statistics.",
-    "config": {
-      "heading": "Current Configuration",
-      "welcomeEnabled": "Welcome Messages",
-      "welcomeMessage": "Welcome Message",
-      "announcementChannelId": "Announcement Channel ID",
-      "notSet": "Not configured",
-      "enabled": "✓ Enabled",
-      "disabled": "✗ Disabled"
-    },
-    "settings": {
-      "heading": "App Statistics",
-      "version": "App Version",
-      "totalMembers": "Members Tracked"
-    }
-  },
-  "bot": {
-    "command": {
-      "template": {
-        "response": "The Template app is active on this server. Use it to explore all Guildora integration patterns.",
-        "notActive": "The Template app is installed but not yet configured."
-      }
+    "title": "Zugriffsrechte",
+    "subtitle": "Lege fest, welche Rollen auf die Einstellungsseite zugreifen dürfen.",
+    "save": "Zugriffsrechte speichern",
+    "saving": "Speichern…",
+    "saveSuccess": "Zugriffsrechte aktualisiert.",
+    "saveError": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+    "roles": {
+      "heading": "Zugriff auf Einstellungsseite",
+      "description": "Wähle aus, welche Rollen die Einstellungsseite sehen und bearbeiten dürfen. Admins haben immer Zugriff.",
+      "user": "User",
+      "userDesc": "Alle Community-Mitglieder",
+      "moderator": "Moderator",
+      "moderatorDesc": "Mitglieder mit Moderatoren-Rolle",
+      "admin": "Admin",
+      "adminDesc": "Immer eingeschlossen",
+      "adminNote": "Admins haben immer Zugriff auf die Einstellungsseite und können nicht entfernt werden."
     }
   },
   "error": {
-    "load": "Failed to load data. Please refresh the page.",
-    "announce": "Failed to send announcement: {message}",
-    "settings": "Failed to load settings. Please refresh the page.",
-    "forbidden": "You do not have permission to view this page."
+    "load": "Daten konnten nicht geladen werden. Bitte Seite neu laden.",
+    "settings": "Einstellungen konnten nicht geladen werden. Bitte Seite neu laden."
   },
-  "loading": "Loading…",
-  "back": "Back",
-  "save": "Save",
-  "cancel": "Cancel"
+  "loading": "Lädt…",
+  "back": "Zurück",
+  "save": "Speichern",
+  "cancel": "Abbrechen"
 }

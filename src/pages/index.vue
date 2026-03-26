@@ -1,88 +1,78 @@
 <template>
-  <div class="p-6 font-nunito">
+  <section class="space-y-6">
     <!-- Page header -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold" style="color: var(--color-text, #111)">
-        {{ t('app.title') }}
-      </h1>
-      <p class="mt-1 text-sm" style="color: var(--color-text-muted, #666)">
-        {{ t('app.subtitle') }}
-      </p>
-    </div>
-
-    <!-- Welcome banner -->
-    <div
-      v-if="user"
-      class="mb-6 p-4 rounded-lg font-nunito"
-      style="background: var(--color-surface-alt, #f9fafb); border: 1px solid var(--color-border, #e5e7eb);"
-    >
-      <p style="color: var(--color-text, #111)">{{ t('app.welcome', { username: user.displayName }) }}</p>
+    <div>
+      <h1 class="text-2xl font-bold md:text-3xl">{{ t('app.title') }}</h1>
+      <p class="text-sm opacity-80">{{ t('app.subtitle') }}</p>
     </div>
 
     <!-- Loading state -->
-    <div v-if="pending" class="font-nunito" style="color: var(--color-text-muted, #666)">
-      {{ t('loading') }}
-    </div>
+    <div v-if="pending" class="opacity-60">{{ t('loading') }}</div>
 
     <!-- Error state -->
-    <div
-      v-else-if="error"
-      style="border: 1px solid #f87171; background: #fef2f2; padding: 1rem; border-radius: 0.5rem; color: #b91c1c;"
-    >
-      {{ t('error.load') }}
-    </div>
+    <div v-else-if="error" class="alert alert-error">{{ t('error.load') }}</div>
 
-    <!-- Content -->
-    <div v-else class="space-y-4">
-      <!-- Community overview card -->
+    <div v-else class="space-y-6">
+      <!-- Setup warning -->
       <div
-        style="border: 1px solid var(--color-border, #e5e7eb); background: var(--color-surface, #fff); padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"
+        v-if="!overview?.lobbyConfigured || !overview?.categoryConfigured"
+        class="alert alert-warning"
       >
-        <h2 class="mb-4 font-bold font-nunito" style="color: var(--color-text, #111)">
-          {{ t('app.overview.heading') }}
-        </h2>
-        <dl style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-          <div>
-            <dt class="text-xs font-semibold font-nunito" style="color: var(--color-text-muted, #666); text-transform: uppercase; letter-spacing: 0.05em;">
-              {{ t('app.overview.membersTracked') }}
-            </dt>
-            <dd class="mt-1 text-2xl font-bold font-nunito" style="color: var(--color-accent, #ff206e)">
-              {{ overview?.membersTracked ?? 0 }}
-            </dd>
+        <div>
+          <p class="mb-2 font-semibold">{{ t('app.setup.title') }}</p>
+          <ul class="flex list-disc flex-col gap-1 pl-6">
+            <li v-if="!overview?.lobbyConfigured" class="text-sm">{{ t('app.setup.lobbyMissing') }}</li>
+            <li v-if="!overview?.categoryConfigured" class="text-sm">{{ t('app.setup.categoryMissing') }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Status card -->
+      <div class="card">
+        <div class="p-6">
+          <h2 class="mb-4 text-base font-semibold text-[var(--color-text-primary)]">{{ t('app.status.heading') }}</h2>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="stat">
+              <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">{{ t('app.status.activeChannels') }}</div>
+              <div class="text-2xl font-bold text-[var(--color-accent)]">{{ overview?.managedChannels ?? 0 }}</div>
+            </div>
+            <div class="stat">
+              <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">{{ t('app.status.appStatus') }}</div>
+              <div class="text-2xl font-bold" :style="overview?.appActive ? 'color: var(--color-success)' : 'color: var(--color-error)'">
+                {{ overview?.appActive ? t('app.status.active') : t('app.status.inactive') }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">{{ t('app.status.lobby') }}</div>
+              <div class="text-base font-semibold" :style="overview?.lobbyConfigured ? 'color: var(--color-success)' : 'color: var(--color-error)'">
+                {{ overview?.lobbyConfigured ? t('app.status.configured') : t('app.status.notConfigured') }}
+              </div>
+            </div>
+            <div class="stat">
+              <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">{{ t('app.status.category') }}</div>
+              <div class="text-base font-semibold" :style="overview?.categoryConfigured ? 'color: var(--color-success)' : 'color: var(--color-error)'">
+                {{ overview?.categoryConfigured ? t('app.status.configured') : t('app.status.notConfigured') }}
+              </div>
+            </div>
           </div>
-          <div>
-            <dt class="text-xs font-semibold font-nunito" style="color: var(--color-text-muted, #666); text-transform: uppercase; letter-spacing: 0.05em;">
-              {{ t('app.overview.appActive') }}
-            </dt>
-            <dd class="mt-1 text-2xl font-bold font-nunito" style="color: #16a34a;">
-              {{ t('app.overview.active') }}
-            </dd>
-          </div>
-        </dl>
-        <p v-if="!overview?.membersTracked" class="mt-4 text-sm font-nunito" style="color: var(--color-text-muted, #666)">
-          {{ t('app.overview.noData') }}
-        </p>
+        </div>
       </div>
 
       <!-- Moderator shortcut -->
       <div v-if="hasRole('moderator')">
-        <NuxtLink
-          to="/apps/temporary-voice-channels/mod"
-          class="text-sm font-nunito"
-          style="color: var(--color-accent, #ff206e); text-decoration: underline;"
-        >
-          {{ t('nav.mod') }} →
+        <NuxtLink to="/apps/temporary-voice-channels/settings" class="inline-flex text-sm text-[var(--color-accent)] hover:underline">
+          {{ t('nav.settings') }} →
         </NuxtLink>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { useI18n, useAuth, useFetch } from '@guildora/hub'
 
 const { t } = useI18n()
-const { user, hasRole } = useAuth()
+const { hasRole } = useAuth()
 
 const { data: overview, pending, error } = await useFetch('/api/apps/temporary-voice-channels/overview')
 </script>

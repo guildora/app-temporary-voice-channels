@@ -2,11 +2,7 @@
 // Returns aggregate app statistics. Restricted to admins.
 
 export default defineEventHandler(async (event) => {
-  const { userRoles, db } = event.context.guildora
-
-  if (!['admin', 'superadmin'].some((role) => userRoles.includes(role))) {
-    throw createError({ statusCode: 403, message: 'Forbidden' })
-  }
+  const { db } = event.context.guildora
 
   const managedIndex = await db.get('tempvc:managed-index')
   const managedChannels = Array.isArray(managedIndex) ? managedIndex.length : 0

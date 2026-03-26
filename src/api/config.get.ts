@@ -1,7 +1,7 @@
 import { loadTempVoiceConfig } from '../bot/configLoader'
 
 // GET /api/apps/temporary-voice-channels/config
-// Returns normalized app config values. Restricted to admins.
+// Returns normalized app config values. Accessible to moderators and above.
 
 export default defineEventHandler(async (event) => {
   const normalized = loadTempVoiceConfig(event.context.guildora.config as Record<string, unknown>)

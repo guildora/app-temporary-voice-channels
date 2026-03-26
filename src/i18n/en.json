@@ -1,69 +1,88 @@
 {
   "nav": {
-    "app": "App",
-    "mod": "Moderation",
-    "admin": "Admin"
+    "app": "Voice Rooms",
+    "settings": "Settings",
+    "admin": "Access Rights"
   },
   "app": {
-    "title": "Template App",
-    "subtitle": "A community overview powered by the Guildora app template.",
-    "welcome": "Welcome back, {username}!",
-    "overview": {
-      "heading": "Community Overview",
-      "membersTracked": "Members Tracked",
-      "appActive": "App Status",
+    "title": "Voice Rooms",
+    "subtitle": "Overview of your temporary voice channels.",
+    "setup": {
+      "title": "Setup incomplete",
+      "lobbyMissing": "No lobby channel configured. Set a Lobby Channel ID in Settings.",
+      "categoryMissing": "No category configured. Set a Category ID in Settings."
+    },
+    "status": {
+      "heading": "Current Status",
+      "activeChannels": "Active Channels",
+      "appStatus": "App Status",
       "active": "Active",
-      "noData": "No data yet. The app will populate as members interact."
+      "inactive": "Inactive",
+      "lobby": "Lobby Channel",
+      "category": "Voice Category",
+      "configured": "Configured",
+      "notConfigured": "Not configured"
     }
   },
-  "mod": {
-    "title": "Moderation",
-    "subtitle": "Send announcements and review recent moderation actions.",
-    "announce": {
-      "heading": "Send Announcement",
-      "messagePlaceholder": "Write your announcement…",
-      "submit": "Send",
-      "submitting": "Sending…",
-      "success": "Announcement sent to the configured channel.",
-      "noChannel": "No announcement channel configured. Set one in Admin → App Settings."
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure temporary voice channel behaviour.",
+    "save": "Save Settings",
+    "saving": "Saving…",
+    "saveSuccess": "Settings saved successfully.",
+    "saveError": "Failed to save settings. Please try again.",
+    "config": {
+      "heading": "Channel Configuration",
+      "enabled": "Enable temporary voice channels",
+      "enabledDesc": "Master switch for temporary channel automation.",
+      "lobbyChannelId": "Lobby Channel ID",
+      "lobbyChannelIdDesc": "Joining this voice channel triggers the creation of a temporary channel.",
+      "categoryId": "Voice Category ID",
+      "categoryIdDesc": "Category in which temporary channels are created.",
+      "idPlaceholder": "Discord channel/category ID…",
+      "channelIcon": "Default Icon / Emoji",
+      "channelIconDesc": "Emoji prepended to new channel names (e.g. 🔵).",
+      "channelName": "Channel Label",
+      "channelNameDesc": "Base name appended after the icon for generated channels.",
+      "countingStyle": "Counting Style",
+      "countingStyleDesc": "How multiple channels are numbered: numerically (Voice Room 1, 2, …) or with emoji sequences (🔵, 🟢, 🔴, …).",
+      "countingNumeric": "Numeric (Voice Room 1, 2, 3…)",
+      "countingEmoji": "Emoji sequence (🔵, 🟢, 🔴…)",
+      "maxChannels": "Max. Managed Channels",
+      "renameEnabled": "Enable icon rename menu",
+      "renameEnabledDesc": "Allow users to change their channel icon via an interactive select menu.",
+      "activityTracking": "Track voice activity",
+      "activityTrackingDesc": "Record activity duration per member for statistics."
     },
-    "log": {
-      "heading": "Recent Actions",
-      "empty": "No actions recorded this session.",
-      "announced": "Sent announcement: \"{message}\""
+    "stats": {
+      "heading": "Statistics",
+      "managedChannels": "Managed Channels",
+      "trackedMembers": "Tracked Members",
+      "totalHours": "Total Hours Tracked"
     }
   },
   "admin": {
-    "title": "Admin",
-    "subtitle": "View app configuration and aggregate statistics.",
-    "config": {
-      "heading": "Current Configuration",
-      "welcomeEnabled": "Welcome Messages",
-      "welcomeMessage": "Welcome Message",
-      "announcementChannelId": "Announcement Channel ID",
-      "notSet": "Not configured",
-      "enabled": "✓ Enabled",
-      "disabled": "✗ Disabled"
-    },
-    "settings": {
-      "heading": "App Statistics",
-      "version": "App Version",
-      "totalMembers": "Members Tracked"
-    }
-  },
-  "bot": {
-    "command": {
-      "template": {
-        "response": "The Template app is active on this server. Use it to explore all Guildora integration patterns.",
-        "notActive": "The Template app is installed but not yet configured."
-      }
+    "title": "Access Rights",
+    "subtitle": "Control which roles can access the Settings page.",
+    "save": "Save Access Rights",
+    "saving": "Saving…",
+    "saveSuccess": "Access rights updated.",
+    "saveError": "Failed to save. Please try again.",
+    "roles": {
+      "heading": "Settings Page Access",
+      "description": "Select which roles are allowed to view and edit the Settings page. Admins always have access.",
+      "user": "User",
+      "userDesc": "All community members",
+      "moderator": "Moderator",
+      "moderatorDesc": "Members with moderator role",
+      "admin": "Admin",
+      "adminDesc": "Always included",
+      "adminNote": "Admins always have access to the Settings page and cannot be removed."
     }
   },
   "error": {
     "load": "Failed to load data. Please refresh the page.",
-    "announce": "Failed to send announcement: {message}",
-    "settings": "Failed to load settings. Please refresh the page.",
-    "forbidden": "You do not have permission to view this page."
+    "settings": "Failed to load settings. Please refresh the page."
   },
   "loading": "Loading…",
   "back": "Back",

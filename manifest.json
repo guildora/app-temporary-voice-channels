@@ -11,7 +11,7 @@
     "rail": [
       {
         "id": "voice-rooms",
-        "icon": "chat",
+        "icon": "proicons:microphone",
         "label": "Voice Rooms",
         "to": "/apps/voice-rooms",
         "order": 50,

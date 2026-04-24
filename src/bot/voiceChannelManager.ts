@@ -521,14 +521,16 @@ async function resolveManagedState(
   context: VoiceRuntimeContext,
   channelId: string,
   knownConfig = loadTempVoiceConfig(context.config)
-): Promise<{ managed: boolean; token: string | null; ownerId: string; createdAt: string }> {
+): Promise<{ managed: boolean; token: string | null; ownerId: string; createdAt: string; channel: VoiceChannelInfo | null }> {
   const byId = await getManagedRecord(context.db, channelId)
   if (byId) {
+    // DB-record fast path — no bot fetch needed, channel is null.
     return {
       managed: true,
       token: byId.token,
       ownerId: byId.ownerId,
-      createdAt: byId.createdAt
+      createdAt: byId.createdAt,
+      channel: null
     }
   }
 
@@ -538,7 +540,8 @@ async function resolveManagedState(
       managed: false,
       token: null,
       ownerId: 'unknown',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      channel: null
     }
   }
 
@@ -547,7 +550,8 @@ async function resolveManagedState(
       managed: false,
       token: null,
       ownerId: 'unknown',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      channel
     }
   }
 
@@ -556,7 +560,8 @@ async function resolveManagedState(
       managed: false,
       token: null,
       ownerId: 'unknown',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      channel
     }
   }
 
@@ -564,7 +569,8 @@ async function resolveManagedState(
     managed: true,
     token: extractToken(channel.name, knownConfig.defaultChannelName, knownConfig.countingStyle, knownConfig.defaultChannelIcon),
     ownerId: 'unknown',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    channel
   }
 }
 
@@ -688,8 +694,12 @@ export async function ensureChannelForLobbyJoin(
 
       const currentVoiceChannelId = await getMemberCurrentVoiceChannelId(context.bot, memberId)
       if (currentVoiceChannelId !== runtimeConfig.lobbyChannelId) {
-        const count = await getVoiceChannelMemberCount(context.bot, channelId)
-        if (count === 0) {
+        // Channel was just created — fetch once, reuse memberCount for the
+        // emptiness check. Replaces the old getVoiceChannelMemberCount call.
+        const createdChannel = await getVoiceChannel(context.bot, channelId)
+        const memberCount = createdChannel?.memberCount ?? null
+        // Strict === 0: delete if empty. null (bot didn't populate) → no-op.
+        if (memberCount === 0) {
           const deleted = await deleteManagedChannel(context, channelId)
           return { channelId: deleted ? null : channelId, created: true, moved: false, deleted, reason: 'left-lobby-before-move' }
         }
@@ -699,8 +709,10 @@ export async function ensureChannelForLobbyJoin(
 
       const moved = await moveMemberToChannel(context.bot, memberId, channelId)
       if (!moved) {
-        const count = await getVoiceChannelMemberCount(context.bot, channelId)
-        if (count === 0) {
+        // Reuse the same fetch logic — only one bot API call for the emptiness check.
+        const createdChannel = await getVoiceChannel(context.bot, channelId)
+        const memberCount = createdChannel?.memberCount ?? null
+        if (memberCount === 0) {
           const deleted = await deleteManagedChannel(context, channelId)
           return { channelId: deleted ? null : channelId, created: true, moved: false, deleted, reason: 'move-failed' }
         }
@@ -730,7 +742,12 @@ export async function cleanupIfManagedAndEmpty(
     const managed = await resolveManagedState(context, channelId, runtimeConfig)
     if (!managed.managed) return false
 
-    const memberCount = await getVoiceChannelMemberCount(context.bot, channelId)
+    // Use pre-fetched channel info from resolveManagedState when available
+    // (bot-fetch path). Fall back to a fresh fetch only on the DB-record
+    // fast path where no channel was retrieved.
+    const memberCount = managed.channel?.memberCount ?? (await getVoiceChannelMemberCount(context.bot, channelId))
+    // Strict equality: memberCount === 0 triggers deletion.
+    // null (bot didn't populate) or any positive number is a no-op.
     if (memberCount !== 0) return false
 
     return deleteManagedChannel(context, channelId)

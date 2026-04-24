@@ -205,12 +205,23 @@ async function saveManagedIndex(db: AppDb, channelIds: string[]): Promise<void> 
   await db.set(MANAGED_INDEX_KEY, Array.from(new Set(channelIds)))
 }
 
+/**
+ * Append a channelId to a pre-loaded index, de-duplicate, persist, and return the new array.
+ *
+ * Safe under withGuildLock: callers inside a guild lock hold exclusive access,
+ * so the passed-in index cannot be stale due to concurrent writes.
+ */
+async function appendChannelIdToIndex(db: AppDb, channelId: string, index: string[]): Promise<string[]> {
+  if (index.includes(channelId)) return index
+
+  const next = [...index, channelId]
+  await saveManagedIndex(db, next)
+  return next
+}
+
 async function addManagedChannelToIndex(db: AppDb, channelId: string): Promise<void> {
   const index = await loadManagedIndex(db)
-  if (index.includes(channelId)) return
-
-  index.push(channelId)
-  await saveManagedIndex(db, index)
+  await appendChannelIdToIndex(db, channelId, index)
 }
 
 async function removeManagedChannelFromIndex(db: AppDb, channelId: string): Promise<void> {
@@ -572,10 +583,10 @@ async function deleteManagedChannel(
   return true
 }
 
-export async function listManagedChannels(guildId: string, context: VoiceRuntimeContext): Promise<ManagedChannelEntry[]> {
+export async function listManagedChannels(guildId: string, context: VoiceRuntimeContext, preloadedIndex?: string[]): Promise<ManagedChannelEntry[]> {
   void guildId
   const runtimeConfig = loadTempVoiceConfig(context.config)
-  const index = await loadManagedIndex(context.db)
+  const index = preloadedIndex ?? await loadManagedIndex(context.db)
   const byChannelId = new Map<string, ManagedChannelEntry>()
 
   const stale: string[] = []
@@ -593,9 +604,18 @@ export async function listManagedChannels(guildId: string, context: VoiceRuntime
     })
   }
 
+  // Prune stale entries in-place so callers holding a reference to the
+  // preloadedIndex array see the cleaned state (avoids a second DB load).
   if (stale.length > 0) {
-    const cleaned = index.filter((channelId) => !stale.includes(channelId))
-    await saveManagedIndex(context.db, cleaned)
+    const staleSet = new Set(stale)
+    let write = 0
+    for (let read = 0; read < index.length; read++) {
+      if (!staleSet.has(index[read])) {
+        index[write++] = index[read]
+      }
+    }
+    index.length = write
+    await saveManagedIndex(context.db, index)
   }
 
   if (runtimeConfig.temporaryVoiceCategoryId) {
@@ -633,7 +653,10 @@ export async function ensureChannelForLobbyJoin(
       return { channelId: null, created: false, moved: false, deleted: false, reason: 'missing-config' }
     }
 
-    const managedChannels = await listManagedChannels(guildId, context)
+    // Load the managed index once — used for count check, token allocation, and post-create append.
+    // Safe because withGuildLock holds exclusive access; no concurrent guild-scoped writes.
+    const managedIndex = await loadManagedIndex(context.db)
+    const managedChannels = await listManagedChannels(guildId, context, managedIndex)
     if (managedChannels.length >= runtimeConfig.maxManagedChannels) {
       return { channelId: null, created: false, moved: false, deleted: false, reason: 'limit-reached' }
     }
@@ -658,7 +681,9 @@ export async function ensureChannelForLobbyJoin(
         ownerId: memberId,
         createdAt: new Date().toISOString()
       })
-      await addManagedChannelToIndex(context.db, channelId)
+      // Reuse the already-loaded index (mutated in-place by listManagedChannels
+      // if stale entries were pruned) — avoids a second DB roundtrip.
+      await appendChannelIdToIndex(context.db, channelId, managedIndex)
       bumpInteractionRevision(guildId)
 
       const currentVoiceChannelId = await getMemberCurrentVoiceChannelId(context.bot, memberId)
@@ -752,6 +777,8 @@ export async function renameManagedChannelToken(
       createdAt: managedState.createdAt
     })
 
+    // Rename is not a hot path — keeping the thin wrapper is fine.
+    // The channel is already indexed, so addManagedChannelToIndex returns early.
     await addManagedChannelToIndex(context.db, channelId)
     bumpInteractionRevision(guildId)
 

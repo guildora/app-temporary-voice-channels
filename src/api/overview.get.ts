@@ -11,8 +11,6 @@ export default defineEventHandler(async (event) => {
   const managedChannels = Array.isArray(index) ? index.length : 0
 
   return {
-    // Backward-compatible alias for the starter index page.
-    membersTracked: managedChannels,
     appActive: runtimeConfig.enabled,
     managedChannels,
     lobbyConfigured: Boolean(runtimeConfig.lobbyChannelId),

@@ -7,6 +7,5 @@ Voice Rooms automatically creates and manages temporary voice channels for your 
 - **Icon-based naming** — channels are prefixed with emojis or icons for easy identification
 - **Counting styles** — choose between numeric naming (Voice Room 1, 2, 3) or emoji-based naming
 - **`/voice-room` command** — lets users pick a custom icon for their channel
-- **Activity tracking** — records voice activity duration for community statistics
 - **Hub configuration** — manage lobby channel, category, naming style, and limits from the Guildora Hub
 - **Up to 50 concurrent channels** — configurable maximum to fit your server's needs

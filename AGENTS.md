@@ -18,6 +18,7 @@ This file is the primary reference for AI agents (Claude, Copilot, Cursor, etc.)
 10. [Sideloading Workflow](#10-sideloading-workflow)
 11. [Common Mistakes](#11-common-mistakes)
 12. [Test Checklist](#12-test-checklist)
+13. [Observability / TTLMap Infrastructure](#13-observability--ttlmap-infrastructure)
 
 ---
 
@@ -151,10 +152,10 @@ Maps HTTP endpoints to Nitro handler files.
     "requiredRoles": ["user"]
   },
   {
-    "method": "POST",
-    "path": "/api/apps/template/announce",
-    "handler": "src/api/announce.post.ts",
-    "requiredRoles": ["moderator"]
+    "method": "GET",
+    "path": "/api/apps/template/config",
+    "handler": "src/api/config.get.ts",
+    "requiredRoles": ["admin"]
   }
 ]
 ```
@@ -188,24 +189,25 @@ Fields editable by admins in the App Settings UI.
 ```jsonc
 "configFields": [
   {
-    "key": "welcomeEnabled",
+    "key": "enabled",
     "type": "boolean",
-    "label": "Enable welcome messages",
-    "description": "Send a welcome message when a new member joins.",
+    "label": "Enable app",
+    "description": "Toggle the app on or off for this guild.",
     "defaultValue": true
   },
   {
-    "key": "welcomeMessage",
+    "key": "countingStyle",
     "type": "string",
-    "label": "Welcome message",
-    "description": "Use {username} as a placeholder.",
-    "defaultValue": "Welcome to the server, {username}!"
+    "label": "Counting style",
+    "description": "Naming style for auto-generated items: 'numeric' or 'emoji'.",
+    "defaultValue": "numeric"
   },
   {
-    "key": "announcementChannelId",
-    "type": "string",
-    "label": "Announcement channel ID",
-    "description": "Discord channel ID where announcements are posted."
+    "key": "maxManagedChannels",
+    "type": "number",
+    "label": "Maximum managed channels",
+    "description": "Upper limit for concurrently managed channels.",
+    "defaultValue": 50
   }
 ]
 ```
@@ -225,7 +227,7 @@ Environment variables the admin must configure on the server.
 A plain-text string displayed to the admin after installation.
 
 ```jsonc
-"installNotes": "After install, configure the announcement channel in App Settings."
+"installNotes": "After install, configure the lobby channel in App Settings."
 ```
 
 ---
@@ -240,7 +242,7 @@ Pages live in `src/pages/` and are standard Vue 3 SFCs (Single File Components).
 <template>
   <div class="p-6 font-nunito">
     <h1 class="text-2xl font-bold font-nunito">{{ t('app.title') }}</h1>
-    <p>{{ overview.membersTracked }}</p>
+    <p>{{ overview.managedChannels }}</p>
   </div>
 </template>
 
@@ -275,7 +277,7 @@ export default defineEventHandler(async (event) => {
   // db is a guild-scoped key-value store
   const members = await db.list('member:')
 
-  return { membersTracked: members.length, appActive: true }
+  return { managedChannels: members.length, appActive: true }
 })
 ```
 
@@ -324,7 +326,7 @@ export async function onRoleChange(payload: RoleChangePayload, ctx: BotContext) 
 }
 
 export async function onMemberJoin(payload: MemberJoinPayload, ctx: BotContext) {
-  const channelId = ctx.config.announcementChannelId as string | undefined
+  const channelId = ctx.config.welcomeChannelId as string | undefined
   if (channelId) {
     await ctx.bot.sendMessage(channelId, `Welcome, <@${payload.memberId}>!`)
   }
@@ -440,18 +442,18 @@ Config values are set per-guild by admins in the App Settings UI.
 Access in API handlers:
 ```typescript
 const { config } = event.context.guildora
-const channelId = config.announcementChannelId ?? null  // always provide a fallback
+const channelId = config.welcomeChannelId ?? null  // always provide a fallback
 ```
 
 Access in Vue pages:
 ```typescript
 const config = useAppConfig()
-const enabled = config.welcomeEnabled  // true/false
+const enabled = config.enabled  // true/false
 ```
 
 Access in bot hooks:
 ```typescript
-const enabled = (ctx.config.welcomeEnabled as boolean) ?? true
+const enabled = (ctx.config.enabled as boolean) ?? true
 ```
 
 **Always use fallbacks** — config values can be undefined if not yet set.
@@ -694,3 +696,73 @@ Before publishing, verify:
 - [ ] Admin role: panel shows all 3 items; admin page loads without 403
 - [ ] Role restrictions work (try accessing protected pages with lower role)
 - [ ] Locale switches between EN/DE on all 3 pages
+
+> **Note:** CI (`.github/workflows/ci.yml`) runs manifest validation (`validate-manifest.py`), i18n parity (`check-i18n-parity.py`), and TypeScript syntax checks (`tsc --noEmit`) on every PR to `main`. Branch protection requires the **CI / validate** check to pass before merge.
+
+---
+
+## 13. Observability / TTLMap Infrastructure
+
+Guildora apps that maintain in-memory state across events should use the `TTLMap<K, V>` class for bounded caches that evict stale entries automatically.
+
+### TTLMap (`src/bot/ttlMap.ts`)
+
+A generic `Map` wrapper where every entry carries a `lastAccess` timestamp. `get` and `set` bump the timestamp automatically.
+
+```typescript
+import { TTLMap } from './ttlMap'
+
+const map = new TTLMap<string, number>()
+map.set('guild-abc', 42)
+map.get('guild-abc') // 42 — also bumps lastAccess
+```
+
+**Key methods:**
+
+| Method | Description |
+|--------|-------------|
+| `startSweep(intervalMs, maxAgeMs)` | Start a periodic timer that evicts entries older than `maxAgeMs`. |
+| `stopSweep()` | Stop the periodic timer. |
+| `sweepOnce(maxAgeMs)` | Run a single eviction pass. Returns the number of evicted entries. |
+| `debugInfo()` | Returns `{ entryCount: number, oldestAgeMs: number \| null }` — useful for diagnostics and health checks. |
+
+### Integration pattern in Voice Rooms
+
+The voice-rooms app maintains several guild-keyed `Map` instances in `voiceChannelManager.ts`. Activity is tracked via `touchGuildActivity(guildId)`, which updates a `lastGuildActivity` timestamp. The exported function `sweepStaleGuilds(maxAgeMs)` evicts all in-memory state for guilds idle longer than `maxAgeMs`.
+
+Two lifecycle exports control the sweep timer:
+
+```typescript
+import { startMapSweep, stopMapSweep } from './voiceChannelManager'
+
+// Start periodic sweep (default: every 5 min, evict after 30 min idle)
+startMapSweep(300_000, 1_800_000)
+
+// Stop on shutdown
+stopMapSweep()
+```
+
+### Known operational concern
+
+`startMapSweep()` is exported but **not yet called at bot startup** — the sweep timer is dead code until wired into the bot's initialization path. This is a wiring gap, not a correctness issue: maps accumulate entries but never evict until the startup call is added.
+
+### Background timer pattern
+
+Both `TTLMap.startSweep()` and `startMapSweep()` follow the same safe pattern:
+
+1. `setInterval(callback, intervalMs)` creates the timer.
+2. `timer.unref()` is called so the timer **does not prevent Node.js process exit**.
+3. The sweep body is wrapped in `try/catch` so sweep errors **never crash the bot** — they are logged and swallowed.
+
+```typescript
+const timer = setInterval(() => {
+  try {
+    // eviction logic
+  } catch (err) {
+    console.error('[voice-rooms] Sweep error:', err)
+  }
+}, intervalMs)
+if (typeof (timer as any).unref === 'function') {
+  ;(timer as any).unref()
+}
+```

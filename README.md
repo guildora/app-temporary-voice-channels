@@ -11,7 +11,6 @@ When a user joins a configured lobby channel, the bot creates a temporary voice 
 - Per-guild runtime config from Hub Admin (no hardcoded runtime IDs)
 - Auto cleanup for empty managed channels
 - Dynamic icon rename menu via `/voice-room` interaction
-- Separate voice activity tracking handler
 
 ## Runtime Configuration (Hub Admin)
 
@@ -24,7 +23,6 @@ Configure these fields in App Settings:
 - `defaultChannelName`
 - `maxManagedChannels`
 - `renameEnabled`
-- `activityTrackingEnabled`
 
 ## Bot Command
 
@@ -35,7 +33,6 @@ Configure these fields in App Settings:
 - `GET /api/apps/voice-rooms/overview`
 - `GET /api/apps/voice-rooms/config`
 - `GET /api/apps/voice-rooms/settings`
-- `POST /api/apps/voice-rooms/announce`
 
 ## Development
 
